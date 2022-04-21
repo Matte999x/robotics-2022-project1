@@ -50,11 +50,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  Wheels_velocity.msg
+)
 
 ## Generate services in the 'srv' folder
 add_service_files(
@@ -134,6 +133,10 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(bag_sub src/bag_subscriber.cpp)
 add_dependencies(bag_sub ${catkin_EXPORTED_TARGETS})
 target_link_libraries(bag_sub ${catkin_LIBRARIES})
+
+add_executable(wheel_pub src/wheel_publisher.cpp)
+add_dependencies(wheel_pub ${catkin_EXPORTED_TARGETS})
+target_link_libraries(wheel_pub ${catkin_LIBRARIES})
 
 
 #############

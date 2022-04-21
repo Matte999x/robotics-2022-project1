@@ -9,7 +9,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 
-#define r 0.07 * 2.00461 / 1.851
+#define r 0.07
 #define L 0.200
 #define W 0.169
 #define T 5.0
