@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="project1" type="bag_sub" name="sub" output="screen"/>
+</launch>
