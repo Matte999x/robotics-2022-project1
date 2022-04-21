@@ -8,6 +8,7 @@
 #include <nav_msgs/Odometry.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
+#include "project1/ResetOdometry.h"
 
 #define r 0.07
 #define L 0.200
@@ -29,14 +30,14 @@ private:
     ros::Subscriber sub2;
     ros::Publisher cmd_vel_pub;
     ros::Publisher calculated_pose_pub;
+    tf2_ros::TransformBroadcaster tf_broadcaster;
+    ros::ServiceServer resetOdometryService;
 
     ros::Time previous_time;
     ros::Time current_time;
 
     geometry_msgs::TwistStamped velocity;
-    geometry_msgs::PoseStamped poseStamped;
-
-    tf2_ros::TransformBroadcaster tf_broadcaster;
+    geometry_msgs::PoseStamped poseStamped;    
 
     float current_wheel_velocity[4];
     long int previous_ticks[4];
@@ -56,6 +57,8 @@ public:
 
         cmd_vel_pub = n.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1000);
         calculated_pose_pub = n.advertise<nav_msgs::Odometry>("/odom", 1000);
+
+        resetOdometryService = n.advertiseService("reset_odometry", &BagSubscriber::resetOdometryCallback, this);
 
         n.getParam("/x", x);
         n.getParam("/y", y);
@@ -228,6 +231,13 @@ public:
 
     }
 */
+    bool resetOdometryCallback(project1::ResetOdometry::Request &request, project1::ResetOdometry::Response &response) {
+        x = request.x;
+        y = request.y;
+        theta = request.theta;
+        ROS_INFO("Resetting odometry to (%f, %f, %f)", x, y, theta);
+        return true;
+    }
 };
 
 int main(int argc, char** argv) {
