@@ -18,8 +18,6 @@
 #define cnst1 r/4
 #define cnst2 r/(4*(L+W))
 
-#define BILLION 1000000000.0
-
 
 //using namespace sensor_msgs;
 
@@ -63,6 +61,8 @@ public:
 
     void robotCallback (const geometry_msgs::PoseStamped::ConstPtr& data) {
         if (setup_starting_position) {
+
+        ROS_INFO("Passato da setup");
             setup_starting_position = false;
 
             x = data->pose.position.x;
@@ -123,8 +123,8 @@ public:
             else
                 angle = theta + velocity.twist.angular.z * deltaTime / 2.0;  // Runge-Kutta method (2nd order)
 
-            x = x + (velocity.twist.linear.x * cos(angle) - velocity.twist.linear.y * sin(angle)) * deltaTime;
-            y = y + (velocity.twist.linear.x * sin(angle) + velocity.twist.linear.y * cos(angle)) * deltaTime;
+            x = x + (velocity.twist.linear.x * cos(angle) + velocity.twist.linear.y * sin(angle)) * deltaTime;
+            y = y + (velocity.twist.linear.x * sin(angle) - velocity.twist.linear.y * cos(angle)) * deltaTime;
             theta = theta + velocity.twist.angular.z * deltaTime;
 
             // create rotation quaternion for publishing TF and odometry
@@ -134,7 +134,7 @@ public:
             // broadcast TF odom->base_link
             geometry_msgs::TransformStamped odom_trans;
             odom_trans.header.stamp = current_time;
-            odom_trans.header.frame_id = "odom";
+            odom_trans.header.frame_id = "world";
             odom_trans.child_frame_id = "base_link";
             odom_trans.transform.translation.x = x;
             odom_trans.transform.translation.y = y;
@@ -148,7 +148,7 @@ public:
             // publish odometry
             nav_msgs::Odometry odometryMsg;
             odometryMsg.header.stamp = current_time;
-            odometryMsg.header.frame_id = "odom";
+            odometryMsg.header.frame_id = "world";
             odometryMsg.pose.pose.position.x = x;
             odometryMsg.pose.pose.position.y = y;
             odometryMsg.pose.pose.position.z = 0.0;
@@ -228,13 +228,15 @@ public:
 };
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "bag_subscriber");
+
+    ros::init(argc, argv, "bag_sub");
+
     // dynamic_reconfigure::Server<project1::parametersConfig> dynServer;
     // dynamic_reconfigure::Server<project1::parametersConfig>::CallbackType f;
 //
     // f = boost::bind()
 
-    BagSubscriber bagSub();
+    BagSubscriber bagSub;
     ros::spin();
     return 0;
 }
