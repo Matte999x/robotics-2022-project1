@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(project1)
+project(robotics-2022-project1)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -106,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES project1
+#  LIBRARIES robotics-2022-project1
 #  CATKIN_DEPENDS roscpp sensor_msgs std_msgs tf2 tf2_ros
 #  DEPENDS system_lib
 )
@@ -124,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/project1.cpp
+#   src/${PROJECT_NAME}/robotics-2022-project1.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -185,7 +185,7 @@ target_link_libraries(bag_sub ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_project1.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_robotics-2022-project1.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
