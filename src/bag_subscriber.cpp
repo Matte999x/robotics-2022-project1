@@ -49,7 +49,7 @@ private:
 public:
     BagSubscriber () {
         setup = true;
-        setup_starting_position = true;
+        setup_starting_position = false;
 
         sub = n.subscribe("/wheel_states", 1000, &BagSubscriber::wheelDataCallback, this);
         sub2 = n.subscribe("/robot/pose", 1000, &BagSubscriber::robotCallback, this);
@@ -57,6 +57,9 @@ public:
         cmd_vel_pub = n.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1000);
         calculated_pose_pub = n.advertise<nav_msgs::Odometry>("/odom", 1000);
 
+        n.getParam("/x", x);
+        n.getParam("/y", y);
+        n.getParam("/theta", theta);
     }
 
     void robotCallback (const geometry_msgs::PoseStamped::ConstPtr& data) {

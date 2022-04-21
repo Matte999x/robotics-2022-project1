@@ -1,3 +1,6 @@
 <launch>
     <node pkg="robotics-2022-project1" type="bag_sub" name="sub" output="screen"/>
+    <param name="x" value="0" />
+    <param name="y" value="0" />
+    <param name="theta" value="0" />
 </launch>
