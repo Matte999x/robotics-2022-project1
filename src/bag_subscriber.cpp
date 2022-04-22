@@ -1,7 +1,6 @@
 #include <math.h>
 #include "ros/ros.h"
 #include "sensor_msgs/JointState.h"
-// #include <project1/parametersConfig.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/TwistStamped.h>
@@ -9,6 +8,8 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
 #include "project1/ResetOdometry.h"
+#include <dynamic_reconfigure/server.h>
+#include <project1/integrationMethodConfig.h>
 
 #define r 0.07
 #define L 0.200
@@ -20,8 +21,6 @@
 #define cnst2 r/(4*(L+W))
 
 
-//using namespace sensor_msgs;
-
 class BagSubscriber {
 
 private:
@@ -32,6 +31,8 @@ private:
     ros::Publisher calculated_pose_pub;
     tf2_ros::TransformBroadcaster tf_broadcaster;
     ros::ServiceServer resetOdometryService;
+    dynamic_reconfigure::Server<project1::integrationMethodConfig> dynamicReconfigureServer;
+    dynamic_reconfigure::Server<project1::integrationMethodConfig>::CallbackType dynamicReconfigureCallback;
 
     ros::Time previous_time;
     ros::Time current_time;
@@ -44,8 +45,9 @@ private:
     float current_movement_velocity[4];
     double x, y, theta;
 
-    bool setup, setup_starting_position, mode = false;
+    bool setup, setup_starting_position;
 
+    enum IntegrationMethod { Euler, RungeKutta } integrationMethod;
 
 public:
     BagSubscriber () {
@@ -58,17 +60,19 @@ public:
         cmd_vel_pub = n.advertise<geometry_msgs::TwistStamped>("/cmd_vel", 1000);
         calculated_pose_pub = n.advertise<nav_msgs::Odometry>("/odom", 1000);
 
-        resetOdometryService = n.advertiseService("reset_odometry", &BagSubscriber::resetOdometryCallback, this);
+        resetOdometryService = n.advertiseService("reset_odometry", &BagSubscriber::resetOdometry, this);
 
         n.getParam("/x", x);
         n.getParam("/y", y);
         n.getParam("/theta", theta);
+
+        integrationMethod = IntegrationMethod::Euler;
+        dynamicReconfigureCallback = boost::bind(&BagSubscriber::dynamicReconfigureIntegrationMethod, this, _1, _2);
+        dynamicReconfigureServer.setCallback(dynamicReconfigureCallback);
     }
 
     void robotCallback (const geometry_msgs::PoseStamped::ConstPtr& data) {
         if (setup_starting_position) {
-
-        ROS_INFO("Passato da setup");
             setup_starting_position = false;
 
             x = data->pose.position.x;
@@ -122,13 +126,20 @@ public:
             // compute robot velocity (local reference frame)
             compute_velocity();
 
-            // compute odometry
-            float angle;
-            if (mode == false)
-                angle = theta;  // Euler method
-            else
-                angle = theta + velocity.twist.angular.z * deltaTime / 2.0;  // Runge-Kutta method (2nd order)
+            // choose integration method for odometry
+            float angle;            
+            switch (integrationMethod) {
+            case IntegrationMethod::Euler:
+                angle = theta;
+                break;
+            case IntegrationMethod::RungeKutta:
+                angle = theta + velocity.twist.angular.z * deltaTime / 2.0;
+                break;
+            default:
+                angle = theta;
+            }
 
+            // compute odometry
             x = x + (velocity.twist.linear.x * cos(angle) + velocity.twist.linear.y * sin(angle)) * deltaTime;
             y = y + (velocity.twist.linear.x * sin(angle) - velocity.twist.linear.y * cos(angle)) * deltaTime;
             theta = theta + velocity.twist.angular.z * deltaTime;
@@ -231,25 +242,40 @@ public:
 
     }
 */
-    bool resetOdometryCallback(project1::ResetOdometry::Request &request, project1::ResetOdometry::Response &response) {
+
+    bool resetOdometry(project1::ResetOdometry::Request &request, project1::ResetOdometry::Response &response) {
         x = request.x;
         y = request.y;
         theta = request.theta;
         ROS_INFO("Resetting odometry to (%f, %f, %f)", x, y, theta);
         return true;
     }
+
+    void dynamicReconfigureIntegrationMethod(project1::integrationMethodConfig &config, uint32_t level) {
+        if (config.odometry_integration_method >= 0 && config.odometry_integration_method < 2)
+            integrationMethod = (IntegrationMethod)config.odometry_integration_method;
+
+        switch (integrationMethod) {
+        case IntegrationMethod::Euler:
+            ROS_INFO("Changed integration method to Euler");
+            break;
+        case IntegrationMethod::RungeKutta:
+            ROS_INFO("Changed integration method to Runge Kutta");
+            break;
+        default:
+            ROS_INFO("Unimplemented integration method");
+            break;
+        }        
+    }
 };
 
-int main(int argc, char** argv) {
 
+int main(int argc, char** argv) {
     ros::init(argc, argv, "bag_sub");
 
-    // dynamic_reconfigure::Server<project1::parametersConfig> dynServer;
-    // dynamic_reconfigure::Server<project1::parametersConfig>::CallbackType f;
-//
-    // f = boost::bind()
-
     BagSubscriber bagSub;
+
     ros::spin();
+
     return 0;
 }

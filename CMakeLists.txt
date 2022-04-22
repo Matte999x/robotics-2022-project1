@@ -7,13 +7,16 @@ project(project1)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
+find_package(
+  catkin
+  REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   std_msgs
   tf2
   tf2_ros
   message_generation
+  dynamic_reconfigure
 )
 
 ## System dependencies are found with CMake's conventions
@@ -89,10 +92,9 @@ generate_messages(
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/integrationMethod.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -107,7 +109,9 @@ catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES project1
 #  CATKIN_DEPENDS roscpp sensor_msgs std_msgs tf2 tf2_ros
-  CATKIN_DEPENDS message_runtime
+  CATKIN_DEPENDS
+  message_runtime
+  dynamic_reconfigure
 #  DEPENDS system_lib
 )
 
