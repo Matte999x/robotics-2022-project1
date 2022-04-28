@@ -1,7 +1,7 @@
 <launch>
-    <node pkg="project1" type="bag_sub" name="sub" output="screen"/>
-    <node pkg="project1" type="wheel_pub" name="pub" output="screen"/>
-    <param name="x" value="0" />
-    <param name="y" value="0" />
-    <param name="theta" value="0" />
+    <node pkg="project1" type="odometry" name="odometry" output="screen"/>
+    <node pkg="project1" type="wheel_pub" name="wheel_pub" output="screen"/>
+    <param name="x0" value="0" />
+    <param name="y0" value="0" />
+    <param name="theta0" value="0" />
 </launch>

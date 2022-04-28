@@ -134,9 +134,9 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 
-add_executable(bag_sub src/bag_subscriber.cpp)
-add_dependencies(bag_sub ${catkin_EXPORTED_TARGETS})
-target_link_libraries(bag_sub ${catkin_LIBRARIES})
+add_executable(odometry src/odometry.cpp)
+add_dependencies(odometry ${catkin_EXPORTED_TARGETS})
+target_link_libraries(odometry ${catkin_LIBRARIES})
 
 add_executable(wheel_pub src/wheel_publisher.cpp)
 add_dependencies(wheel_pub ${catkin_EXPORTED_TARGETS})

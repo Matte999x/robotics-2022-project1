@@ -1,25 +1,23 @@
-#include "ros/ros.h"
+#include <ros/ros.h>
 #include "project1/Wheels_velocity.h"
 #include <geometry_msgs/TwistStamped.h>
+#include "parameters.h"
 
-#define R 0.07
-#define L 0.200
-#define W 0.169
-#define T 5.0
 
-#define CST T*60/R
-
+// robot parameters
+using namespace parameters;
+float CST = T*60/R;
 
 class WheelPublisher {
 private:
-    ros::NodeHandle n;
+    ros::NodeHandle nodeHandle;
     ros::Subscriber cmd_vel_sub;
     ros::Publisher wheel_pub;
 
 public:
     WheelPublisher() {
-        cmd_vel_sub = n.subscribe("/cmd_vel", 1000, &WheelPublisher::cmdVelCallback, this);
-        wheel_pub = n.advertise<project1::Wheels_velocity>("wheels_rpm", 1000);
+        cmd_vel_sub = nodeHandle.subscribe("/cmd_vel", 1000, &WheelPublisher::cmdVelCallback, this);
+        wheel_pub = nodeHandle.advertise<project1::Wheels_velocity>("wheels_rpm", 1000);
     }
 
     void cmdVelCallback (const geometry_msgs::TwistStamped::ConstPtr& data) {
@@ -30,16 +28,16 @@ public:
 
         wheels.rpm_fl = CST * ( + data->twist.linear.x
                                 + data->twist.linear.y
-                                - data->twist.angular.z * (L + W));
+                                - data->twist.angular.z * (L_W));
         wheels.rpm_fr = CST * ( + data->twist.linear.x
                                 - data->twist.linear.y
-                                + data->twist.angular.z * (L + W));
+                                + data->twist.angular.z * (L_W));
         wheels.rpm_rl = CST * ( + data->twist.linear.x
                                 - data->twist.linear.y
-                                - data->twist.angular.z * (L + W));
+                                - data->twist.angular.z * (L_W));
         wheels.rpm_rr = CST * ( + data->twist.linear.x
                                 + data->twist.linear.y
-                                + data->twist.angular.z * (L + W));
+                                + data->twist.angular.z * (L_W));
 
         wheel_pub.publish(wheels);
     }
