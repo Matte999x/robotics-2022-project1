@@ -1,7 +1,8 @@
 <launch>
     <node pkg="project1" type="odometry" name="odometry" output="screen"/>
     <node pkg="project1" type="wheel_pub" name="wheel_pub" output="screen"/>
-    <param name="x0" value="0" />
-    <param name="y0" value="0" />
-    <param name="theta0" value="0" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="world_odom_tf" args="0 0 0 0 0 0 world odom"/>
+    <param name="x0" value="0"/>
+    <param name="y0" value="0"/>
+    <param name="theta0" value="0"/>
 </launch>

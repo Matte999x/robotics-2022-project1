@@ -65,11 +65,11 @@ public:
     void wheelDataCallback (const sensor_msgs::JointState::ConstPtr& data) {
         current_time = data->header.stamp;
         if (setup) {
+            // executed only at first message received
             setup = false;
             previous_time = current_time;
-            for (int i=0; i<4; i++) {
+            for (int i=0; i<4; i++)
                 previous_ticks[i] = data->position[i];
-            }
         } else {
             // compute time step
             double deltaTime = (current_time - previous_time).toSec();
@@ -130,7 +130,7 @@ public:
             // broadcast TF odom->base_link
             geometry_msgs::TransformStamped odom_trans;
             odom_trans.header.stamp = current_time;
-            odom_trans.header.frame_id = "world";
+            odom_trans.header.frame_id = "odom";
             odom_trans.child_frame_id = "base_link";
             odom_trans.transform.translation.x = x;
             odom_trans.transform.translation.y = y;
@@ -144,7 +144,7 @@ public:
             // publish odometry
             nav_msgs::Odometry odometryMsg;
             odometryMsg.header.stamp = current_time;
-            odometryMsg.header.frame_id = "world";
+            odometryMsg.header.frame_id = "odom";
             odometryMsg.pose.pose.position.x = x;
             odometryMsg.pose.pose.position.y = y;
             odometryMsg.pose.pose.position.z = 0.0;
