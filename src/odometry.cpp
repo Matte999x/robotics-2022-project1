@@ -193,7 +193,7 @@ public:
 
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "bag_sub");
+    ros::init(argc, argv, "odometry");
 
     OdometryNode odometryNode;
 
