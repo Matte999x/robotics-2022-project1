@@ -27,16 +27,16 @@ public:
         wheels.header.stamp = data->header.stamp;
 
         wheels.rpm_fl = CST * ( + data->twist.linear.x
-                                + data->twist.linear.y
+                                - data->twist.linear.y
                                 - data->twist.angular.z * (L_W));
         wheels.rpm_fr = CST * ( + data->twist.linear.x
-                                - data->twist.linear.y
+                                + data->twist.linear.y
                                 + data->twist.angular.z * (L_W));
         wheels.rpm_rl = CST * ( + data->twist.linear.x
-                                - data->twist.linear.y
+                                + data->twist.linear.y
                                 - data->twist.angular.z * (L_W));
         wheels.rpm_rr = CST * ( + data->twist.linear.x
-                                + data->twist.linear.y
+                                - data->twist.linear.y
                                 + data->twist.angular.z * (L_W));
 
         wheel_pub.publish(wheels);
