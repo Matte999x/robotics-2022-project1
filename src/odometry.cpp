@@ -32,7 +32,7 @@ private:
     ros::Time previous_time;
     ros::Time current_time;
     long int previous_ticks[4];
-    float wheel_speeds[4];
+    double wheel_speeds[4];
     double x, y, theta;
     geometry_msgs::TwistStamped velocity;
 
@@ -106,7 +106,7 @@ public:
             cmd_vel_pub.publish(velocity);
 
             // choose integration method for odometry
-            float angle;            
+            double angle;       
             switch (integrationMethod) {
             case IntegrationMethod::Euler:
                 angle = theta;
